@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Lời Chúc Lung Linh 💖</title>
+  <meta charset="UTF-8" />
+  <title>Lời Chúc Lung Linh 2 💖</title>
   <style>
     body {
       margin: 0;
@@ -20,6 +20,7 @@
 
     .text3d {
       position: absolute;
+      top: -200px; /* 👈 đảm bảo bắt đầu ngoài khung hình */
       white-space: nowrap;
       font-size: 24px;
       font-weight: bold;
@@ -27,12 +28,13 @@
       text-shadow: 0 0 10px rgba(255,255,255,0.6);
       transform-style: preserve-3d;
       opacity: 0.8;
-      animation: fall linear;
+      animation: fall linear forwards;
+      pointer-events: none;
     }
 
     @keyframes fall {
       0% {
-        transform: translateY(-200px) translateZ(var(--z)) scale(1);
+        transform: translateY(0px) translateZ(var(--z)) scale(1);
         opacity: 0;
       }
       20% {
@@ -52,6 +54,7 @@
       border-radius: 50%;
       opacity: 0.3;
       animation: twinkle 2s infinite ease-in-out alternate;
+      pointer-events: none;
     }
 
     @keyframes twinkle {
@@ -61,7 +64,7 @@
   </style>
 </head>
 <body>
-  <!-- 🎵 Nhạc nền nhẹ (ẩn) -->
+  <!-- 🔈 Nhạc nền (ẩn) -->
   <iframe style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay"></iframe>
 
   <script>
@@ -116,7 +119,7 @@
       }
     }
 
-    // Gọi khi bắt đầu
+    // Khởi tạo hiệu ứng
     createStars();
     setInterval(createFallingText, 300);
     setInterval(createFallingEmoji, 400);
