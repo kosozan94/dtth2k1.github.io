@@ -63,7 +63,7 @@
     }
 
     .center-video {
-      position: absolute;
+      position: fixed; /* CHỈNH SỬA TẠI ĐÂY */
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -93,13 +93,12 @@
 </head>
 <body>
 
-  <!-- 🔈 Nhạc nền ẩn (YouTube iframe) -->
+  <!-- 🔈 Nhạc nền (YouTube ẩn) -->
   <iframe id="bg-music" style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?enablejsapi=1&autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay" frameborder="0"></iframe>
 
-  <!-- 💖 Video giữa trang -->
+  <!-- 💖 Video căn giữa hoàn hảo -->
   <video autoplay loop muted playsinline class="center-video" id="heart-video">
     <source src="video.mp4" type="video/mp4" />
-    Trình duyệt của bạn không hỗ trợ phát video.
   </video>
 
   <script>
@@ -152,7 +151,7 @@
     setInterval(createFallingText, 300);
     setInterval(createFallingEmoji, 400);
 
-    // 🎵 Tắt/bật nhạc khi click video
+    // 🎵 Click video để tắt/bật nhạc
     let musicOn = true;
     const iframe = document.getElementById("bg-music");
     const heartVideo = document.getElementById("heart-video");
