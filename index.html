@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chúc Mừng Sinh Nhật Bé Huyền 💕</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chúc Mừng Sinh Nhật</title>
   <style>
     html, body {
       margin: 0;
@@ -36,17 +36,14 @@
       position: absolute;
       font-weight: bold;
       white-space: nowrap;
-      animation: floatDown linear forwards;
+      animation: floatDown linear forwards, glowPulse 2s infinite;
       animation-timing-function: ease-in;
       text-shadow: 0 0 4px currentColor;
-      animation-name: floatDown, glowPulse;
-      animation-duration: 6s, 2s;
-      animation-iteration-count: 1, infinite;
     }
 
     @keyframes floatDown {
       0% {
-        transform: translateY(-100px);
+        transform: translateY(-30px);
         opacity: 0;
       }
       10% {
@@ -62,13 +59,24 @@
       0%, 100% { text-shadow: 0 0 4px currentColor; }
       50% { text-shadow: 0 0 12px currentColor; }
     }
+
+    /* Responsive cho điện thoại */
+    @media (max-width: 600px) {
+      .message {
+        font-size: 1em !important;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- VIDEO GIỮA TRANG -->
-  <video src="video.mp4" class="center-video" autoplay muted loop playsinline></video>
+  <!-- 🎵 Nhạc nền -->
+  <audio id="bgm" src="music.mp3" autoplay loop></audio>
 
+  <!-- 🎥 Video ở chính giữa -->
+  <video src="video.mp4" class="center-video" autoplay muted loop playsinline id="mainVideo"></video>
+
+  <!-- 💌 Chữ rơi -->
   <script>
     const messages = [
       "Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
@@ -108,8 +116,8 @@
       msg.className = "message";
       msg.innerText = messages[Math.floor(Math.random() * messages.length)];
       msg.style.color = colors[Math.floor(Math.random() * colors.length)];
-      msg.style.left = `${Math.random() * 90 + 5}%`;
-      msg.style.top = `-${Math.random() * 10 + 2}vh`;
+      msg.style.left = `${Math.random() * 80 + 10}vw`;   // từ 10vw → 90vw
+      msg.style.top = `${Math.random() * 10}vh`;         // từ 0vh → 10vh
       msg.style.animationDuration = `6s, 2s`;
       msg.style.fontSize = `${1 + Math.random() * 0.5}em`;
       document.body.appendChild(msg);
@@ -117,6 +125,18 @@
     }
 
     setInterval(createMessage, 1000);
+
+    // Tắt/bật nhạc khi click video
+    const video = document.getElementById("mainVideo");
+    const audio = document.getElementById("bgm");
+
+    video.addEventListener("click", () => {
+      if (!audio.paused) {
+        audio.pause();
+      } else {
+        audio.play();
+      }
+    });
   </script>
 
 </body>
