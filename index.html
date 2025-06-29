@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Chúc Mừng Sinh Nhật Bé Huyền Đáng Iu</title>
+  <title>Chúc Mừng Sinh Nhật Bé Huyền</title>
   <style>
     html, body {
       margin: 0;
@@ -11,47 +11,40 @@
       background-color: #140016;
       overflow: hidden;
       height: 100vh;
-      font-family: sans-serif;
-      color: white;
+      font-family: Arial, sans-serif;
     }
 
-    #heartCanvas {
+    canvas {
       position: absolute;
       top: 0;
       left: 0;
       z-index: 1;
     }
 
-    .title {
+    .text-overlay, .cake-wrapper {
       position: absolute;
-      top: 20vh;
-      width: 100%;
-      text-align: center;
-      font-size: 3em;
-      opacity: 0;
-      animation: fadeIn 2s forwards 4s;
-    }
-
-    .subtitle {
-      position: absolute;
-      top: 30vh;
-      width: 100%;
-      text-align: center;
-      font-size: 2em;
-      opacity: 0;
-      animation: fadeIn 2s forwards 6s;
-    }
-
-    .cake {
-      position: absolute;
-      top: 45vh;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      width: 120px;
-      cursor: pointer;
-      opacity: 0;
-      animation: fadeIn 2s forwards 8s;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: white;
       z-index: 2;
+    }
+
+    .text-overlay h1 {
+      font-size: 2em;
+      margin: 0.2em 0;
+      animation: fadeIn 2s ease-in-out;
+    }
+
+    .cake-wrapper img {
+      width: 100px;
+      cursor: pointer;
+      animation: pulse 2s infinite;
+    }
+
+    .hidden {
+      display: none;
     }
 
     .center-video {
@@ -63,115 +56,132 @@
       max-height: 60vh;
       border-radius: 20px;
       box-shadow: 0 0 30px 5px rgba(255, 100, 200, 0.6);
-      z-index: 3;
-      display: none;
-    }
-
-    .message {
-      position: absolute;
-      font-weight: bold;
-      white-space: nowrap;
-      animation: floatDown linear forwards, glowPulse 2s infinite;
-      text-shadow: 0 0 4px currentColor;
       z-index: 2;
     }
 
-    @keyframes floatDown {
-      0% { transform: translateY(-30px); opacity: 0; }
-      10% { opacity: 1; }
-      100% { transform: translateY(100vh); opacity: 0; }
-    }
-
-    @keyframes glowPulse {
-      0%, 100% { text-shadow: 0 0 4px currentColor; }
-      50% { text-shadow: 0 0 12px currentColor; }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
     }
 
     @keyframes fadeIn {
+      from { opacity: 0; }
       to { opacity: 1; }
     }
   </style>
 </head>
 <body>
-
   <canvas id="heartCanvas"></canvas>
 
-  <h1 class="title">ĐINH THỊ THU HUYỀN</h1>
-  <div class="subtitle">SINH NHẬT TUỔI 24</div>
-  <img class="cake" id="cake" src="cake.png" alt="cake with candle" />
+  <div class="text-overlay hidden" id="textBlock">
+    <h1>ĐINH THỊ THU HUYỀN</h1>
+    <h1>SINH NHẬT TUỔI 24</h1>
+  </div>
 
-  <video src="video.mp4" class="center-video" autoplay loop playsinline controls id="mainVideo"></video>
+  <div class="cake-wrapper hidden" id="cakeBlock">
+    <img id="cake" src="cake.png" alt="Cake" />
+  </div>
+
+  <video src="video.mp4" class="center-video hidden" autoplay loop playsinline id="mainVideo"></video>
   <audio id="bgm" src="music.mp3" autoplay loop></audio>
 
   <script>
-    const canvas = document.getElementById('heartCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("heartCanvas");
+    const ctx = canvas.getContext("2d");
+    let particles = [];
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    let particles = [];
-    function heartShape(t) {
-      return {
-        x: 16 * Math.pow(Math.sin(t), 3),
-        y: - (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t))
-      };
+    class Particle {
+      constructor(x, y, tx, ty, color) {
+        this.x = x;
+        this.y = y;
+        this.tx = tx;
+        this.ty = ty;
+        this.color = color;
+        this.size = 2;
+        this.life = 0;
+      }
+
+      update() {
+        this.life += 1;
+        const speed = 0.05;
+        this.x += (this.tx - this.x) * speed;
+        this.y += (this.ty - this.y) * speed;
+      }
+
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
     }
 
-    for (let i = 0; i < 400; i++) {
-      let t = Math.random() * Math.PI * 2;
-      let point = heartShape(t);
-      particles.push({
-        x: canvas.width / 2 + point.x * 10,
-        y: canvas.height / 2 + point.y * 10,
-        vx: (Math.random() - 0.5) * 2,
-        vy: (Math.random() - 0.5) * 2,
-        alpha: 1
-      });
+    function heartFunction(t) {
+      const scale = 10;
+      const x = scale * 16 * Math.pow(Math.sin(t), 3);
+      const y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+      return { x, y };
     }
 
-    function animateHeart() {
+    function createHeartParticles() {
+      particles = [];
+      for (let t = 0; t < Math.PI * 2; t += 0.08) {
+        const { x, y } = heartFunction(t);
+        const tx = window.innerWidth / 2 + x * 10;
+        const ty = window.innerHeight / 2 + y * 10;
+        const px = Math.random() * canvas.width;
+        const py = Math.random() * canvas.height;
+        particles.push(new Particle(px, py, tx, ty, "#ff2d55"));
+      }
+    }
+
+    function animate() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       for (let p of particles) {
-        ctx.fillStyle = `rgba(255,0,0,${p.alpha})`;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        p.x += p.vx;
-        p.y += p.vy;
-        p.alpha -= 0.005;
+        p.update();
+        p.draw();
       }
-      particles = particles.filter(p => p.alpha > 0);
-      requestAnimationFrame(animateHeart);
-    }
-    animateHeart();
-
-    // After candle is clicked
-    const cake = document.getElementById('cake');
-    const video = document.getElementById('mainVideo');
-    cake.onclick = () => {
-      cake.style.display = 'none';
-      video.style.display = 'block';
-      startMessages();
+      requestAnimationFrame(animate);
     }
 
-    const messages = ["Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới nhiều yêu thương 💖", "Luôn rạng rỡ như hôm nay nhé 🌟"];
-    const colors = ["#FF69B4", "#FFD700", "#FF6347"];
-
-    function startMessages() {
-      setInterval(() => {
-        const msg = document.createElement("div");
-        msg.className = "message";
-        msg.innerText = messages[Math.floor(Math.random() * messages.length)];
-        msg.style.color = colors[Math.floor(Math.random() * colors.length)];
-        msg.style.left = `${Math.random() * 80 + 10}vw`;
-        msg.style.top = `${Math.random() * 10}vh`;
-        msg.style.animationDuration = `6s, 2s`;
-        msg.style.fontSize = `${1 + Math.random() * 0.5}em`;
-        document.body.appendChild(msg);
-        setTimeout(() => msg.remove(), 6000);
-      }, 1000);
+    function formTextParticles() {
+      const textCanvas = document.createElement("canvas");
+      const tCtx = textCanvas.getContext("2d");
+      textCanvas.width = canvas.width;
+      textCanvas.height = canvas.height;
+      tCtx.fillStyle = "white";
+      tCtx.font = "bold 60px Arial";
+      tCtx.fillText("ĐINH THỊ THU HUYỀN", canvas.width / 2 - 250, canvas.height / 2);
+      tCtx.fillText("SINH NHẬT TUỔI 24", canvas.width / 2 - 210, canvas.height / 2 + 80);
+      const imageData = tCtx.getImageData(0, 0, canvas.width, canvas.height);
+      particles = [];
+      for (let y = 0; y < canvas.height; y += 6) {
+        for (let x = 0; x < canvas.width; x += 6) {
+          const i = (y * canvas.width + x) * 4;
+          if (imageData.data[i + 3] > 128) {
+            particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, x, y, "#ff2d55"));
+          }
+        }
+      }
     }
+
+    window.onload = () => {
+      createHeartParticles();
+      animate();
+      setTimeout(() => {
+        formTextParticles();
+        document.getElementById("textBlock").classList.remove("hidden");
+        document.getElementById("cakeBlock").classList.remove("hidden");
+      }, 4000);
+    };
+
+    document.getElementById("cake").addEventListener("click", () => {
+      document.getElementById("cakeBlock").classList.add("hidden");
+      document.getElementById("textBlock").classList.add("hidden");
+      document.getElementById("mainVideo").classList.remove("hidden");
+    });
   </script>
 </body>
 </html>
