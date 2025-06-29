@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chúc Mừng Sinh Nhật Bé Huyền</title>
   <style>
     html, body {
@@ -11,7 +11,6 @@
       background-color: #140016;
       overflow: hidden;
       height: 100vh;
-      font-family: Arial, sans-serif;
     }
 
     canvas {
@@ -21,33 +20,29 @@
       z-index: 1;
     }
 
-    .text-overlay, .cake-wrapper {
+    #text-container {
       position: absolute;
-      top: 50%;
+      top: 30%;
       left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
+      transform: translateX(-50%);
       color: white;
+      font-size: 2em;
+      font-weight: bold;
+      text-align: center;
       z-index: 2;
     }
 
-    .text-overlay h1 {
-      font-size: 2em;
-      margin: 0.2em 0;
-      animation: fadeIn 2s ease-in-out;
-    }
-
-    .cake-wrapper img {
-      width: 100px;
+    #cake {
+      position: absolute;
+      bottom: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 150px;
       cursor: pointer;
-      animation: pulse 2s infinite;
+      z-index: 2;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    .center-video {
+    #main-video {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -56,132 +51,137 @@
       max-height: 60vh;
       border-radius: 20px;
       box-shadow: 0 0 30px 5px rgba(255, 100, 200, 0.6);
-      z-index: 2;
-    }
-
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.1); }
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
+      display: none;
+      z-index: 3;
     }
   </style>
 </head>
 <body>
-  <canvas id="heartCanvas"></canvas>
 
-  <div class="text-overlay hidden" id="textBlock">
-    <h1>ĐINH THỊ THU HUYỀN</h1>
-    <h1>SINH NHẬT TUỔI 24</h1>
-  </div>
+<audio id="bgm" src="music.mp3" autoplay loop></audio>
+<canvas id="heartCanvas"></canvas>
+<div id="text-container" style="display: none;">
+  <div id="name-text">ĐINH THỊ THU HUYỀN</div>
+  <div id="age-text">SINH NHẬT TUỔI 24</div>
+</div>
+<img src="cake.png" id="cake" style="display: none;">
+<video src="video.mp4" id="main-video" autoplay muted loop playsinline></video>
 
-  <div class="cake-wrapper hidden" id="cakeBlock">
-    <img id="cake" src="cake.png" alt="Cake" />
-  </div>
+<script>
+const canvas = document.getElementById('heartCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-  <video src="video.mp4" class="center-video hidden" autoplay loop playsinline id="mainVideo"></video>
-  <audio id="bgm" src="music.mp3" autoplay loop></audio>
+let particles = [];
+const total = 800;
+const heartFunc = (t) => {
+  const x = 16 * Math.pow(Math.sin(t), 3);
+  const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
+  return [x, y];
+};
 
-  <script>
-    const canvas = document.getElementById("heartCanvas");
-    const ctx = canvas.getContext("2d");
-    let particles = [];
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+for (let i = 0; i < total; i++) {
+  const t = Math.PI * 2 * Math.random();
+  const [x, y] = heartFunc(t);
+  particles.push({
+    x: canvas.width / 2 + x * 20,
+    y: canvas.height / 2 - y * 20,
+    dx: (Math.random() - 0.5) * 10,
+    dy: (Math.random() - 0.5) * 10,
+    radius: 3
+  });
+}
 
-    class Particle {
-      constructor(x, y, tx, ty, color) {
-        this.x = x;
-        this.y = y;
-        this.tx = tx;
-        this.ty = ty;
-        this.color = color;
-        this.size = 2;
-        this.life = 0;
-      }
+let state = 'heart';
 
-      update() {
-        this.life += 1;
-        const speed = 0.05;
-        this.x += (this.tx - this.x) * speed;
-        this.y += (this.ty - this.y) * speed;
-      }
+function drawParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for (let p of particles) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+    ctx.fillStyle = 'red';
+    ctx.fill();
+  }
+}
 
-      draw() {
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+function updateParticles() {
+  for (let p of particles) {
+    p.x += p.dx;
+    p.y += p.dy;
+  }
+}
 
-    function heartFunction(t) {
-      const scale = 10;
-      const x = scale * 16 * Math.pow(Math.sin(t), 3);
-      const y = -scale * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-      return { x, y };
-    }
+function formText(text, yOffset, callback) {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.font = 'bold 40px sans-serif';
+  ctx.fillStyle = 'white';
+  ctx.textAlign = 'center';
+  ctx.fillText(text, canvas.width / 2, canvas.height / 2 + yOffset);
 
-    function createHeartParticles() {
-      particles = [];
-      for (let t = 0; t < Math.PI * 2; t += 0.08) {
-        const { x, y } = heartFunction(t);
-        const tx = window.innerWidth / 2 + x * 10;
-        const ty = window.innerHeight / 2 + y * 10;
-        const px = Math.random() * canvas.width;
-        const py = Math.random() * canvas.height;
-        particles.push(new Particle(px, py, tx, ty, "#ff2d55"));
-      }
-    }
-
-    function animate() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (let p of particles) {
-        p.update();
-        p.draw();
-      }
-      requestAnimationFrame(animate);
-    }
-
-    function formTextParticles() {
-      const textCanvas = document.createElement("canvas");
-      const tCtx = textCanvas.getContext("2d");
-      textCanvas.width = canvas.width;
-      textCanvas.height = canvas.height;
-      tCtx.fillStyle = "white";
-      tCtx.font = "bold 60px Arial";
-      tCtx.fillText("ĐINH THỊ THU HUYỀN", canvas.width / 2 - 250, canvas.height / 2);
-      tCtx.fillText("SINH NHẬT TUỔI 24", canvas.width / 2 - 210, canvas.height / 2 + 80);
-      const imageData = tCtx.getImageData(0, 0, canvas.width, canvas.height);
-      particles = [];
-      for (let y = 0; y < canvas.height; y += 6) {
-        for (let x = 0; x < canvas.width; x += 6) {
-          const i = (y * canvas.width + x) * 4;
-          if (imageData.data[i + 3] > 128) {
-            particles.push(new Particle(Math.random() * canvas.width, Math.random() * canvas.height, x, y, "#ff2d55"));
-          }
-        }
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  let count = 0;
+  for (let y = 0; y < canvas.height; y += 8) {
+    for (let x = 0; x < canvas.width; x += 8) {
+      const index = (y * canvas.width + x) * 4;
+      if (imageData.data[index + 3] > 128 && count < particles.length) {
+        particles[count].tx = x;
+        particles[count].ty = y;
+        count++;
       }
     }
+  }
+  for (let i = count; i < particles.length; i++) {
+    particles[i].tx = Math.random() * canvas.width;
+    particles[i].ty = Math.random() * canvas.height;
+  }
+  callback();
+}
 
-    window.onload = () => {
-      createHeartParticles();
-      animate();
-      setTimeout(() => {
-        formTextParticles();
-        document.getElementById("textBlock").classList.remove("hidden");
-        document.getElementById("cakeBlock").classList.remove("hidden");
-      }, 4000);
-    };
+function animateToText() {
+  let frames = 0;
+  const interval = setInterval(() => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let p of particles) {
+      p.x += (p.tx - p.x) * 0.05;
+      p.y += (p.ty - p.y) * 0.05;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+    }
+    frames++;
+    if (frames > 60) {
+      clearInterval(interval);
+      document.getElementById('text-container').style.display = 'block';
+      document.getElementById('cake').style.display = 'block';
+    }
+  }, 30);
+}
 
-    document.getElementById("cake").addEventListener("click", () => {
-      document.getElementById("cakeBlock").classList.add("hidden");
-      document.getElementById("textBlock").classList.add("hidden");
-      document.getElementById("mainVideo").classList.remove("hidden");
-    });
-  </script>
+function animateHeart() {
+  let frames = 0;
+  const interval = setInterval(() => {
+    drawParticles();
+    updateParticles();
+    frames++;
+    if (frames > 60) {
+      clearInterval(interval);
+      formText('ĐINH THỊ THU HUYỀN', -20, () => {
+        formText('SINH NHẬT TUỔI 24', 30, animateToText);
+      });
+    }
+  }, 30);
+}
+
+animateHeart();
+
+document.getElementById('cake').addEventListener('click', () => {
+  document.getElementById('cake').style.display = 'none';
+  document.getElementById('text-container').style.display = 'none';
+  document.getElementById('main-video').style.display = 'block';
+});
+</script>
+
 </body>
 </html>
