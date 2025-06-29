@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Lời Chúc Lung Linh 2 💖</title>
+  <title>Lời Chúc Lung Linh 💖</title>
   <style>
     body {
       margin: 0;
@@ -20,7 +20,7 @@
 
     .text3d {
       position: absolute;
-      top: -200px; /* 👈 đảm bảo bắt đầu ngoài khung hình */
+      top: -200px;
       white-space: nowrap;
       font-size: 24px;
       font-weight: bold;
@@ -61,11 +61,30 @@
       0% { opacity: 0.1; transform: scale(1); }
       100% { opacity: 1; transform: scale(1.5); }
     }
+
+    .center-video {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+      max-width: 80vw;
+      max-height: 60vh;
+      border-radius: 12px;
+      box-shadow: 0 0 40px rgba(255,255,255,0.3);
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
-  <!-- 🔈 Nhạc nền (ẩn) -->
+  <!-- 🔈 Nhạc nền nhẹ (ẩn) -->
   <iframe style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay"></iframe>
+
+  <!-- 🎬 Video nằm giữa -->
+  <video autoplay loop muted playsinline class="center-video">
+    <source src="video.mp4" type="video/mp4" />
+    Trình duyệt của bạn không hỗ trợ phát video.
+  </video>
 
   <script>
     const messages = [
@@ -119,7 +138,6 @@
       }
     }
 
-    // Khởi tạo hiệu ứng
     createStars();
     setInterval(createFallingText, 300);
     setInterval(createFallingEmoji, 400);
