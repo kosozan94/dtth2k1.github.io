@@ -1,111 +1,71 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <title>Lời Chúc Lung Linh 💖</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chúc Mừng Sinh Nhật</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      padding: 0;
+      background-color: #140016;
       overflow: hidden;
-      background: radial-gradient(ellipse at center, #0a0a0a 0%, #000000 100%);
-      font-family: 'Segoe UI', sans-serif;
-      perspective: 1000px;
-      animation: glowBackground 6s ease-in-out infinite alternate;
-    }
-
-    @keyframes glowBackground {
-      0% { background-color: #000000; }
-      100% { background-color: #1a0a1a; }
-    }
-
-    .text3d {
-      position: absolute;
-      top: -200px;
-      white-space: nowrap;
-      font-size: 24px;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 10px rgba(255,255,255,0.6);
-      transform-style: preserve-3d;
-      opacity: 0.8;
-      animation: fall linear forwards;
-      pointer-events: none;
-    }
-
-    @keyframes fall {
-      0% {
-        transform: translateY(0px) translateZ(var(--z)) scale(1);
-        opacity: 0;
-      }
-      20% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(120vh) translateZ(var(--z)) scale(1);
-        opacity: 0;
-      }
-    }
-
-    .star {
-      position: absolute;
-      width: 2px;
-      height: 2px;
-      background: white;
-      border-radius: 50%;
-      opacity: 0.3;
-      animation: twinkle 2s infinite ease-in-out alternate;
-      pointer-events: none;
-    }
-
-    @keyframes twinkle {
-      0% { opacity: 0.1; transform: scale(1); }
-      100% { opacity: 1; transform: scale(1.5); }
+      height: 100vh;
     }
 
     .center-video {
-      position: fixed; /* CHỈNH SỬA TẠI ĐÂY */
+      position: fixed;
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 2;
-      max-width: 300px;
-      max-height: 400px;
+      max-width: 90vw;
+      max-height: 60vh;
       border-radius: 20px;
       pointer-events: auto;
       animation: pulseGlow 2s infinite;
+      box-shadow: 0 0 30px 5px rgba(255, 100, 200, 0.6);
     }
 
     @keyframes pulseGlow {
+      0%   { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
+      50%  { box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); }
+      100% { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
+    }
+
+    .message {
+      position: absolute;
+      color: white;
+      font-size: 1.5em;
+      font-weight: bold;
+      white-space: nowrap;
+      text-shadow: 0 0 8px #fff;
+      animation: floatDown linear;
+    }
+
+    @keyframes floatDown {
       0% {
-        box-shadow: 0 0 10px rgba(255, 128, 255, 0.4);
-        transform: translate(-50%, -50%) scale(1);
+        transform: translateY(-100px) translateZ(0);
+        opacity: 0;
       }
-      50% {
-        box-shadow: 0 0 25px rgba(255, 128, 255, 0.7);
-        transform: translate(-50%, -50%) scale(1.03);
+      10% {
+        opacity: 1;
       }
       100% {
-        box-shadow: 0 0 10px rgba(255, 128, 255, 0.4);
-        transform: translate(-50%, -50%) scale(1);
+        transform: translateY(100vh) translateZ(-300px);
+        opacity: 0;
       }
     }
   </style>
 </head>
 <body>
 
-  <!-- 🔈 Nhạc nền (YouTube ẩn) -->
-  <iframe id="bg-music" style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?enablejsapi=1&autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay" frameborder="0"></iframe>
+  <!-- VIDEO GIỮA TRANG -->
+  <video src="video.mp4" class="center-video" autoplay muted loop playsinline></video>
 
-  <!-- 💖 Video căn giữa hoàn hảo -->
-  <video autoplay loop muted playsinline class="center-video" id="heart-video">
-    <source src="video.mp4" type="video/mp4" />
-  </video>
-
+  <!-- TẠO CHỮ RƠI -->
   <script>
     const messages = [
-      "Anh yêu em nhiều 💖", "Cảm ơn vì đã đến 💌", "Ai lớp diu bặc bặc 😘",
-      "Luôn bên nhau 🫶", "He he he he he 🤭", "Tình iu sô nhìu 💞",
-      "Xa mà gần 🌌", "Thương như hôm qua 🕊️", "Mỗi dòng là nhớ 💭",
       "Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
       "Chúc em mãi cười tươi như hôm nay 😄", "Sinh nhật vui như mơ nhé 🌈",
       "Anh gửi nghìn cái ôm đến em 🤗", "Tuổi mới xinh hơn, vui hơn nha 🌟",
@@ -126,77 +86,27 @@
       "Một năm mới đầy yêu thương đang chờ 💕", "Anh tặng cả tim cho sinh nhật em ❤️",
       "Tuổi mới nhớ yêu bản thân nhiều hơn nha 🧘", "Mừng ngày em đến với thế giới này 🌍",
       "Sinh nhật là lý do để cưng chiều em hơn 😋", "Năm nay – em sẽ toả sáng hơn bao giờ hết 🌟",
-      "Em là món quà của vũ trụ, biết không? 🎁", "Chúc em ngủ ngon cả năm luôn 😴 (trừ hôm nay)",
+      "Em là món quà của vũ trụ, biết không? 🎁", "Chúc em ngủ ngon cả năm luôn 😴",
       "Mỗi năm chỉ có một ngày để em làm nữ hoàng 👸", "Anh chúc em ăn mãi không béo 🍜😂",
-      "Cười nhiều – yêu nhiều – được thương nhiều nha 😘", "Chúc em dũng cảm và dịu dàng như em vốn có 🕊️",
-      "Tuổi mới – chạm gần hơn với ước mơ 🛤️", "Thêm tuổi, nhưng vẫn là bé con của anh 🐣",
+      "Cười nhiều – yêu nhiều – được thương nhiều nha 😘", "Chúc em dịu dàng như em vốn có 🕊️",
+      "Tuổi mới – chạm gần hơn với ước mơ 🛤️", "Thêm tuổi, vẫn là bé con của anh 🐣",
       "Anh chỉ chúc một điều: em mãi hạnh phúc 🥺", "Sinh nhật ấm áp – bên anh và những điều em yêu 💞"
     ];
 
-    const emojis = ["❤️", "💖", "💌", "🥰", "😘", "💞", "💫", "🫶", "🌸"];
-
-    function createFallingText() {
-      const el = document.createElement("div");
-      el.className = "text3d";
-      el.innerText = messages[Math.floor(Math.random() * messages.length)];
-      el.style.left = `${Math.random() * window.innerWidth}px`;
-      el.style.setProperty('--z', `${Math.floor(Math.random() * 1000 - 500)}px`);
-      el.style.animationDuration = `${Math.random() * 5 + 4}s`;
-      el.style.animationDelay = `${Math.random() * 2}s`;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 10000);
+    function createMessage() {
+      const msg = document.createElement("div");
+      msg.className = "message";
+      msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+      msg.style.left = `${Math.random() * 100}%`;
+      msg.style.animationDuration = `${5 + Math.random() * 5}s`;
+      msg.style.fontSize = `${1 + Math.random() * 1.5}em`;
+      msg.style.transform = `translateZ(${Math.random() * 300}px)`;
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 10000);
     }
 
-    function createFallingEmoji() {
-      const el = document.createElement("div");
-      el.className = "text3d";
-      el.innerText = emojis[Math.floor(Math.random() * emojis.length)];
-      el.style.left = `${Math.random() * window.innerWidth}px`;
-      el.style.setProperty('--z', `${Math.floor(Math.random() * 1000 - 500)}px`);
-      el.style.animationDuration = `${Math.random() * 5 + 4}s`;
-      el.style.animationDelay = `${Math.random() * 2}s`;
-      el.style.fontSize = `${16 + Math.random() * 16}px`;
-      el.style.opacity = 0.7;
-      document.body.appendChild(el);
-      setTimeout(() => el.remove(), 10000);
-    }
-
-    function createStars(count = 80) {
-      for (let i = 0; i < count; i++) {
-        const star = document.createElement("div");
-        star.className = "star";
-        star.style.left = Math.random() * window.innerWidth + "px";
-        star.style.top = Math.random() * window.innerHeight + "px";
-        star.style.animationDuration = (Math.random() * 2 + 1) + "s";
-        document.body.appendChild(star);
-      }
-    }
-
-    createStars();
-    setInterval(createFallingText, 300);
-    setInterval(createFallingEmoji, 400);
-
-    // 🎵 Click video để tắt/bật nhạc
-    let musicOn = true;
-    const iframe = document.getElementById("bg-music");
-    const heartVideo = document.getElementById("heart-video");
-
-    function postMessageToYouTube(command) {
-      iframe.contentWindow.postMessage(JSON.stringify({
-        event: "command",
-        func: command,
-        args: []
-      }), "*");
-    }
-
-    heartVideo.addEventListener("click", () => {
-      if (musicOn) {
-        postMessageToYouTube("pauseVideo");
-      } else {
-        postMessageToYouTube("playVideo");
-      }
-      musicOn = !musicOn;
-    });
+    setInterval(createMessage, 500);
   </script>
+
 </body>
 </html>
