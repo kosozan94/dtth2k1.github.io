@@ -32,7 +32,7 @@
 
     @keyframes fall {
       0% {
-        transform: translateY(-100px) translateZ(var(--z)) scale(1);
+        transform: translateY(-200px) translateZ(var(--z)) scale(1);
         opacity: 0;
       }
       20% {
@@ -61,7 +61,7 @@
   </style>
 </head>
 <body>
-  <!-- 🌟 YouTube background music (optional) -->
+  <!-- 🎵 Nhạc nền nhẹ (ẩn) -->
   <iframe style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay"></iframe>
 
   <script>
@@ -86,6 +86,7 @@
       el.style.left = `${Math.random() * window.innerWidth}px`;
       el.style.setProperty('--z', `${Math.floor(Math.random() * 1000 - 500)}px`);
       el.style.animationDuration = `${Math.random() * 5 + 4}s`;
+      el.style.animationDelay = `${Math.random() * 2}s`;
       document.body.appendChild(el);
       setTimeout(() => el.remove(), 10000);
     }
@@ -97,6 +98,7 @@
       el.style.left = `${Math.random() * window.innerWidth}px`;
       el.style.setProperty('--z', `${Math.floor(Math.random() * 1000 - 500)}px`);
       el.style.animationDuration = `${Math.random() * 5 + 4}s`;
+      el.style.animationDelay = `${Math.random() * 2}s`;
       el.style.fontSize = `${16 + Math.random() * 16}px`;
       el.style.opacity = 0.7;
       document.body.appendChild(el);
@@ -114,6 +116,7 @@
       }
     }
 
+    // Gọi khi bắt đầu
     createStars();
     setInterval(createFallingText, 300);
     setInterval(createFallingEmoji, 400);
