@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chúc Mừng Sinh Nhật</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chúc Mừng Sinh Nhật Bé Huyền</title>
   <style>
     html, body {
       margin: 0;
@@ -28,19 +28,21 @@
     }
 
     @keyframes pulseGlow {
-      0%   { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
-      50%  { box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); }
+      0% { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
+      50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); }
       100% { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
+    }
+
+    @keyframes glowPulse {
+      0%, 100% { text-shadow: 0 0 5px white, 0 0 10px currentColor; opacity: 1; }
+      50% { text-shadow: 0 0 15px white, 0 0 30px currentColor; opacity: 0.8; }
     }
 
     .message {
       position: absolute;
-      color: white;
-      font-size: 1.5em;
       font-weight: bold;
       white-space: nowrap;
-      text-shadow: 0 0 8px #fff;
-      animation: floatDown linear;
+      animation: floatDown linear, glowPulse 2s infinite;
     }
 
     @keyframes floatDown {
@@ -63,7 +65,7 @@
   <!-- VIDEO GIỮA TRANG -->
   <video src="video.mp4" class="center-video" autoplay muted loop playsinline></video>
 
-  <!-- TẠO CHỮ RƠI -->
+  <!-- HIỆU ỨNG CHỮ RƠI -->
   <script>
     const messages = [
       "Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
@@ -93,11 +95,18 @@
       "Anh chỉ chúc một điều: em mãi hạnh phúc 🥺", "Sinh nhật ấm áp – bên anh và những điều em yêu 💞"
     ];
 
+    const colors = [
+      "#FF69B4", "#FF1493", "#FFD700", "#00FFFF", "#00FF7F",
+      "#FFA500", "#FF4500", "#ADFF2F", "#7B68EE", "#FF00FF"
+    ];
+
     function createMessage() {
       const msg = document.createElement("div");
       msg.className = "message";
       msg.innerText = messages[Math.floor(Math.random() * messages.length)];
-      msg.style.left = `${Math.random() * 100}%`;
+      msg.style.color = colors[Math.floor(Math.random() * colors.length)];
+      msg.style.left = `${Math.random() * 90 + 5}%`;
+      msg.style.top = `-${Math.random() * 20 + 5}vh`;
       msg.style.animationDuration = `${5 + Math.random() * 5}s`;
       msg.style.fontSize = `${1 + Math.random() * 1.5}em`;
       msg.style.transform = `translateZ(${Math.random() * 300}px)`;
