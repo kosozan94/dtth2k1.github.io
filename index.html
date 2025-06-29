@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Chúc Mừng Sinh Nhật Bé Huyền Đáng Iu</title>
   <style>
     html, body {
@@ -11,6 +11,47 @@
       background-color: #140016;
       overflow: hidden;
       height: 100vh;
+      font-family: sans-serif;
+      color: white;
+    }
+
+    #heartCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .title {
+      position: absolute;
+      top: 20vh;
+      width: 100%;
+      text-align: center;
+      font-size: 3em;
+      opacity: 0;
+      animation: fadeIn 2s forwards 4s;
+    }
+
+    .subtitle {
+      position: absolute;
+      top: 30vh;
+      width: 100%;
+      text-align: center;
+      font-size: 2em;
+      opacity: 0;
+      animation: fadeIn 2s forwards 6s;
+    }
+
+    .cake {
+      position: absolute;
+      top: 45vh;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      cursor: pointer;
+      opacity: 0;
+      animation: fadeIn 2s forwards 8s;
+      z-index: 2;
     }
 
     .center-video {
@@ -18,42 +59,27 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      #z-index: 2;
       max-width: 90vw;
       max-height: 60vh;
       border-radius: 20px;
-      pointer-events: auto;
-      animation: pulseGlow 2s infinite;
       box-shadow: 0 0 30px 5px rgba(255, 100, 200, 0.6);
+      z-index: 3;
+      display: none;
     }
 
-    @keyframes pulseGlow {
-      0%, 100% { box-shadow: 0 0 10px rgba(255, 192, 203, 0.3); }
-      50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); }
-    }
-
-    .message, .icon {
+    .message {
       position: absolute;
       font-weight: bold;
       white-space: nowrap;
       animation: floatDown linear forwards, glowPulse 2s infinite;
-      animation-timing-function: ease-in;
       text-shadow: 0 0 4px currentColor;
-      z-index: 1;
+      z-index: 2;
     }
 
     @keyframes floatDown {
-      0% {
-        transform: translateY(-30px);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(100vh);
-        opacity: 0;
-      }
+      0% { transform: translateY(-30px); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
     }
 
     @keyframes glowPulse {
@@ -61,98 +87,91 @@
       50% { text-shadow: 0 0 12px currentColor; }
     }
 
-    @media (max-width: 600px) {
-      .message, .icon {
-        font-size: 1em !important;
-      }
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 🎵 Nhạc nền -->
-  <audio id="bgm" src="music.MP3" autoplay loop></audio>
+  <canvas id="heartCanvas"></canvas>
 
-  <!-- 🎥 Video ở giữa -->
-  <video src="video.mp4" class="center-video" autoplay muted loop playsinline id="mainVideo"></video>
+  <h1 class="title">ĐINH THỊ THU HUYỀN</h1>
+  <div class="subtitle">SINH NHẬT TUỔI 24</div>
+  <img class="cake" id="cake" src="cake.png" alt="cake with candle" />
+
+  <video src="video.mp4" class="center-video" autoplay loop playsinline controls id="mainVideo"></video>
+  <audio id="bgm" src="music.mp3" autoplay loop></audio>
 
   <script>
-    const messages = [
-      "Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
-      "Chúc em mãi cười tươi như hôm nay 😄", "Sinh nhật vui như mơ nhé 🌈",
-      "Anh gửi nghìn cái ôm đến em 🤗", "Tuổi mới xinh hơn, vui hơn nha 🌟",
-      "Mỗi năm em đều đáng yêu hơn 😘", "Chúc em thật nhiều bánh kem 🍰",
-      "Sinh nhật ngọt ngào như chính em 🍯", "Chúc em năm nay gặp nhiều phép màu ✨",
-      "Thêm tuổi mới, đẹp gấp đôi luôn nha 😍", "Tặng em cả bầu trời yêu thương ☁️",
-      "Sinh nhật có anh là đủ rồi hen 🥰", "Hạnh phúc là thấy em cười 💖",
-      "Gửi em nghìn nụ hôn ngày sinh nhật 😚", "Chúc em vui như bé con nhận quà 🎁",
-      "Mãi mãi là công chúa bé nhỏ 👑", "Tuổi mới chill chill, yêu đời nha 🎶",
-      "Thêm tuổi nhưng vẫn cute lắm 🧸", "Sinh nhật đầy ắp hoa và bánh 🎂🌷",
-      "Anh chúc em điều gì em ước cũng đến 🙏", "Thương em nhất quả đất 🌍",
-      "Sinh nhật này, chỉ mong em thật vui 💌", "Thêm tuổi mới, bớt lo âu nhen 😇",
-      "Chúc bé iu tuổi mới lấp lánh 🌟", "Ngày hôm nay là của em 💐",
-      "Cám ơn vì em đã đến 🎈", "Tuổi mới mở ra hành trình mới 🚀",
-      "Yêu em thêm một vòng trái đất 🌎", "Happy birthday my sunshine 🌞",
-      "Chúc em như bánh ngọt – ngọt ngào mãi 🍩", "Thêm tuổi thêm xinh 😆",
-      "Cười lên, hôm nay là ngày đặc biệt của em 😄", "Mong mọi giấc mơ em đều chạm được 💫",
-      "Một năm mới đầy yêu thương đang chờ 💕", "Anh tặng cả tim cho sinh nhật em ❤️",
-      "Tuổi mới nhớ yêu bản thân nhiều hơn nha 🧘", "Mừng ngày em đến với thế giới này 🌍",
-      "Chúc em sớm trở thành phú bà 😋", "Năm nay, em sẽ toả sáng hơn bao giờ hết 🌟",
-      "Em là món quà của vũ trụ, biết không? 🎁", "Chúc em ngủ ngon cả năm luôn 😴",
-      "Anh chúc em ăn mãi không béo 🍜😂",
-      "Cười nhiều, yêu nhiều, được thương nhiều nha 😘", "Chúc em dịu dàng như em vốn có 🕊️",
-      "Tuổi mới, chạm gần hơn với ước mơ 🛤️", "Thêm tuổi, vẫn là bé con của anh 🐣",
-      "Anh chỉ chúc một điều: em mãi hạnh phúc 🥺", "Sinh nhật ấm áp, bên anh và những điều em yêu 💞"
-    ];
+    const canvas = document.getElementById('heartCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-    const icons = ["🎂", "🥒"];
-    const colors = [
-      "#FF69B4", "#FFB6C1", "#FFD700", "#ADFF2F", "#87CEFA", "#FF6347",
-      "#00FA9A", "#FFA07A", "#FF8C00", "#E6E6FA", "#FF00FF", "#00CED1"
-    ];
-
-    function createMessage() {
-      const msg = document.createElement("div");
-      msg.className = "message";
-      msg.innerText = messages[Math.floor(Math.random() * messages.length)];
-      msg.style.color = colors[Math.floor(Math.random() * colors.length)];
-      msg.style.left = `${Math.random() * 80 + 10}vw`;
-      msg.style.top = `${Math.random() * 10}vh`;
-      msg.style.animationDuration = `6s, 2s`;
-      msg.style.fontSize = `${1 + Math.random() * 0.5}em`;
-      document.body.appendChild(msg);
-      setTimeout(() => msg.remove(), 6000);
+    let particles = [];
+    function heartShape(t) {
+      return {
+        x: 16 * Math.pow(Math.sin(t), 3),
+        y: - (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t))
+      };
     }
 
-    function createIcon() {
-      const icon = document.createElement("div");
-      icon.className = "icon";
-      icon.innerText = icons[Math.floor(Math.random() * icons.length)];
-      icon.style.left = `${Math.random() * 35 + 10}vw`;
-      icon.style.top = `${Math.random() * 10}vh`;
-      icon.style.animationDuration = `6s, 2s`;
-      icon.style.fontSize = `${1.5 + Math.random()}em`;
-      icon.style.color = colors[Math.floor(Math.random() * colors.length)];
-      document.body.appendChild(icon);
-      setTimeout(() => icon.remove(), 6000);
+    for (let i = 0; i < 400; i++) {
+      let t = Math.random() * Math.PI * 2;
+      let point = heartShape(t);
+      particles.push({
+        x: canvas.width / 2 + point.x * 10,
+        y: canvas.height / 2 + point.y * 10,
+        vx: (Math.random() - 0.5) * 2,
+        vy: (Math.random() - 0.5) * 2,
+        alpha: 1
+      });
     }
 
-    setInterval(() => {
-      createMessage();
-      createIcon();
-    }, 1000);
+    function animateHeart() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let p of particles) {
+        ctx.fillStyle = `rgba(255,0,0,${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+        ctx.fill();
 
-    const video = document.getElementById("mainVideo");
-    const audio = document.getElementById("bgm");
-
-    video.addEventListener("click", () => {
-      if (!audio.paused) {
-        audio.pause();
-      } else {
-        audio.play();
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.005;
       }
-    });
-  </script>
+      particles = particles.filter(p => p.alpha > 0);
+      requestAnimationFrame(animateHeart);
+    }
+    animateHeart();
 
+    // After candle is clicked
+    const cake = document.getElementById('cake');
+    const video = document.getElementById('mainVideo');
+    cake.onclick = () => {
+      cake.style.display = 'none';
+      video.style.display = 'block';
+      startMessages();
+    }
+
+    const messages = ["Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới nhiều yêu thương 💖", "Luôn rạng rỡ như hôm nay nhé 🌟"];
+    const colors = ["#FF69B4", "#FFD700", "#FF6347"];
+
+    function startMessages() {
+      setInterval(() => {
+        const msg = document.createElement("div");
+        msg.className = "message";
+        msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+        msg.style.color = colors[Math.floor(Math.random() * colors.length)];
+        msg.style.left = `${Math.random() * 80 + 10}vw`;
+        msg.style.top = `${Math.random() * 10}vh`;
+        msg.style.animationDuration = `6s, 2s`;
+        msg.style.fontSize = `${1 + Math.random() * 0.5}em`;
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 6000);
+      }, 1000);
+    }
+  </script>
 </body>
 </html>
