@@ -18,7 +18,7 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      #z-index: 2;
+      z-index: 2;
       max-width: 90vw;
       max-height: 60vh;
       border-radius: 20px;
@@ -32,13 +32,14 @@
       50% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.8); }
     }
 
-    .message {
+    .message, .icon {
       position: absolute;
       font-weight: bold;
       white-space: nowrap;
       animation: floatDown linear forwards, glowPulse 2s infinite;
       animation-timing-function: ease-in;
       text-shadow: 0 0 4px currentColor;
+      z-index: 1;
     }
 
     @keyframes floatDown {
@@ -60,9 +61,8 @@
       50% { text-shadow: 0 0 12px currentColor; }
     }
 
-    /* Responsive cho điện thoại */
     @media (max-width: 600px) {
-      .message {
+      .message, .icon {
         font-size: 1em !important;
       }
     }
@@ -73,10 +73,9 @@
   <!-- 🎵 Nhạc nền -->
   <audio id="bgm" src="music.mp3" autoplay loop></audio>
 
-  <!-- 🎥 Video ở chính giữa -->
+  <!-- 🎥 Video ở giữa -->
   <video src="video.mp4" class="center-video" autoplay muted loop playsinline id="mainVideo"></video>
 
-  <!-- 💌 Chữ rơi -->
   <script>
     const messages = [
       "Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
@@ -106,6 +105,7 @@
       "Anh chỉ chúc một điều: em mãi hạnh phúc 🥺", "Sinh nhật ấm áp – bên anh và những điều em yêu 💞"
     ];
 
+    const icons = ["🎂", "🥒"];
     const colors = [
       "#FF69B4", "#FFB6C1", "#FFD700", "#ADFF2F", "#87CEFA", "#FF6347",
       "#00FA9A", "#FFA07A", "#FF8C00", "#E6E6FA", "#FF00FF", "#00CED1"
@@ -116,17 +116,32 @@
       msg.className = "message";
       msg.innerText = messages[Math.floor(Math.random() * messages.length)];
       msg.style.color = colors[Math.floor(Math.random() * colors.length)];
-      msg.style.left = `${Math.random() * 35 + 7}vw`;   // từ 10vw → 90vw
-      msg.style.top = `${Math.random() * 10}vh`;         // từ 0vh → 10vh
+      msg.style.left = `${Math.random() * 80 + 10}vw`;
+      msg.style.top = `${Math.random() * 10}vh`;
       msg.style.animationDuration = `6s, 2s`;
       msg.style.fontSize = `${1 + Math.random() * 0.5}em`;
       document.body.appendChild(msg);
       setTimeout(() => msg.remove(), 6000);
     }
 
-    setInterval(createMessage, 1000);
+    function createIcon() {
+      const icon = document.createElement("div");
+      icon.className = "icon";
+      icon.innerText = icons[Math.floor(Math.random() * icons.length)];
+      icon.style.left = `${Math.random() * 35 + 10}vw`;
+      icon.style.top = `${Math.random() * 10}vh`;
+      icon.style.animationDuration = `6s, 2s`;
+      icon.style.fontSize = `${1.5 + Math.random()}em`;
+      icon.style.color = colors[Math.floor(Math.random() * colors.length)];
+      document.body.appendChild(icon);
+      setTimeout(() => icon.remove(), 6000);
+    }
 
-    // Tắt/bật nhạc khi click video
+    setInterval(() => {
+      createMessage();
+      createIcon();
+    }, 1000);
+
     const video = document.getElementById("mainVideo");
     const audio = document.getElementById("bgm");
 
