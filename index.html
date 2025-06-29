@@ -1,48 +1,52 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chúc Mừng Sinh Nhật Bé Huyền</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chúc Mừng Sinh Nhật Bé Huyền Đáng Iu</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
-      background-color: #140016;
-      overflow: hidden;
       height: 100vh;
+      overflow: hidden;
+      background: #140016;
     }
-
     canvas {
       position: absolute;
       top: 0;
       left: 0;
-      z-index: 1;
     }
-
-    #text-container {
+    .cake {
       position: absolute;
-      top: 30%;
+      top: 50%;
       left: 50%;
-      transform: translateX(-50%);
-      color: white;
-      font-size: 2em;
-      font-weight: bold;
-      text-align: center;
-      z-index: 2;
-    }
-
-    #cake {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 150px;
+      transform: translate(-50%, 80px);
       cursor: pointer;
+      font-size: 5em;
+      filter: drop-shadow(0 0 10px #fff);
+      z-index: 10;
+      display: none;
+    }
+    .message, .icon {
+      position: absolute;
+      font-weight: bold;
+      white-space: nowrap;
+      animation: floatDown linear forwards, glowPulse 2s infinite;
+      animation-timing-function: ease-in;
+      text-shadow: 0 0 4px currentColor;
       z-index: 2;
     }
-
-    #main-video {
+    @keyframes floatDown {
+      0% { transform: translateY(-30px); opacity: 0; }
+      10% { opacity: 1; }
+      100% { transform: translateY(100vh); opacity: 0; }
+    }
+    @keyframes glowPulse {
+      0%, 100% { text-shadow: 0 0 4px currentColor; }
+      50% { text-shadow: 0 0 12px currentColor; }
+    }
+    video {
       position: fixed;
       top: 50%;
       left: 50%;
@@ -50,138 +54,148 @@
       max-width: 90vw;
       max-height: 60vh;
       border-radius: 20px;
-      box-shadow: 0 0 30px 5px rgba(255, 100, 200, 0.6);
+      box-shadow: 0 0 30px rgba(255, 100, 200, 0.6);
+      z-index: 2;
       display: none;
-      z-index: 3;
     }
   </style>
 </head>
 <body>
+  <audio id="bgm" src="music.mp3" autoplay loop></audio>
+  <canvas id="pixelCanvas"></canvas>
+  <div class="cake" id="cake">🎂</div>
+  <video src="video.mp4" id="mainVideo" autoplay loop></video>
+  <script>
+    const canvas = document.getElementById('pixelCanvas');
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width = window.innerWidth;
+    const height = canvas.height = window.innerHeight;
+    const particles = [];
+    const messagePoints = [];
+    const text1 = "ĐINH THỊ THU HUYỀN";
+    const text2 = "SINH NHẬT TUỔI 24";
 
-<audio id="bgm" src="music.mp3" autoplay loop></audio>
-<canvas id="heartCanvas"></canvas>
-<div id="text-container" style="display: none;">
-  <div id="name-text">ĐINH THỊ THU HUYỀN</div>
-  <div id="age-text">SINH NHẬT TUỔI 24</div>
-</div>
-<img src="cake.png" id="cake" style="display: none;">
-<video src="video.mp4" id="main-video" autoplay muted loop playsinline></video>
-
-<script>
-const canvas = document.getElementById('heartCanvas');
-const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-const total = 800;
-const heartFunc = (t) => {
-  const x = 16 * Math.pow(Math.sin(t), 3);
-  const y = 13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t);
-  return [x, y];
-};
-
-for (let i = 0; i < total; i++) {
-  const t = Math.PI * 2 * Math.random();
-  const [x, y] = heartFunc(t);
-  particles.push({
-    x: canvas.width / 2 + x * 20,
-    y: canvas.height / 2 - y * 20,
-    dx: (Math.random() - 0.5) * 10,
-    dy: (Math.random() - 0.5) * 10,
-    radius: 3
-  });
-}
-
-let state = 'heart';
-
-function drawParticles() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let p of particles) {
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-    ctx.fillStyle = 'red';
-    ctx.fill();
-  }
-}
-
-function updateParticles() {
-  for (let p of particles) {
-    p.x += p.dx;
-    p.y += p.dy;
-  }
-}
-
-function formText(text, yOffset, callback) {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.font = 'bold 40px sans-serif';
-  ctx.fillStyle = 'white';
-  ctx.textAlign = 'center';
-  ctx.fillText(text, canvas.width / 2, canvas.height / 2 + yOffset);
-
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  let count = 0;
-  for (let y = 0; y < canvas.height; y += 8) {
-    for (let x = 0; x < canvas.width; x += 8) {
-      const index = (y * canvas.width + x) * 4;
-      if (imageData.data[index + 3] > 128 && count < particles.length) {
-        particles[count].tx = x;
-        particles[count].ty = y;
-        count++;
+    function drawHeart(x, y, size) {
+      ctx.beginPath();
+      for (let t = 0; t < Math.PI * 2; t += 0.05) {
+        let px = size * 16 * Math.pow(Math.sin(t), 3);
+        let py = -size * (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        ctx.fillStyle = "red";
+        ctx.fillRect(x + px, y + py, 2, 2);
+        particles.push({x: x + px, y: y + py, dx: 0, dy: 0, target: null});
       }
     }
-  }
-  for (let i = count; i < particles.length; i++) {
-    particles[i].tx = Math.random() * canvas.width;
-    particles[i].ty = Math.random() * canvas.height;
-  }
-  callback();
-}
 
-function animateToText() {
-  let frames = 0;
-  const interval = setInterval(() => {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let p of particles) {
-      p.x += (p.tx - p.x) * 0.05;
-      p.y += (p.ty - p.y) * 0.05;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fillStyle = 'red';
-      ctx.fill();
+    function getTextPixels(text, offsetY) {
+      ctx.clearRect(0, 0, width, height);
+      ctx.font = "bold 60px Arial";
+      ctx.textAlign = "center";
+      ctx.fillStyle = "white";
+      ctx.fillText(text, width / 2, height / 2 + offsetY);
+      let image = ctx.getImageData(0, 0, width, height);
+      let buffer = [];
+      for (let y = 0; y < image.height; y += 6) {
+        for (let x = 0; x < image.width; x += 6) {
+          let idx = (y * image.width + x) * 4;
+          if (image.data[idx + 3] > 128) {
+            buffer.push({x: x, y: y});
+          }
+        }
+      }
+      return buffer;
     }
-    frames++;
-    if (frames > 60) {
-      clearInterval(interval);
-      document.getElementById('text-container').style.display = 'block';
-      document.getElementById('cake').style.display = 'block';
+
+    function animateToShape(shapePoints) {
+      for (let i = 0; i < particles.length; i++) {
+        if (i < shapePoints.length) {
+          particles[i].target = shapePoints[i];
+        }
+      }
     }
-  }, 30);
-}
 
-function animateHeart() {
-  let frames = 0;
-  const interval = setInterval(() => {
-    drawParticles();
-    updateParticles();
-    frames++;
-    if (frames > 60) {
-      clearInterval(interval);
-      formText('ĐINH THỊ THU HUYỀN', -20, () => {
-        formText('SINH NHẬT TUỔI 24', 30, animateToText);
-      });
+    function renderParticles() {
+      ctx.clearRect(0, 0, width, height);
+      for (let p of particles) {
+        if (p.target) {
+          p.dx += (p.target.x - p.x) * 0.05;
+          p.dy += (p.target.y - p.y) * 0.05;
+          p.dx *= 0.9;
+          p.dy *= 0.9;
+          p.x += p.dx;
+          p.y += p.dy;
+        }
+        ctx.fillStyle = "red";
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      requestAnimationFrame(renderParticles);
     }
-  }, 30);
-}
 
-animateHeart();
+    function showCake() {
+      document.getElementById("cake").style.display = "block";
+    }
 
-document.getElementById('cake').addEventListener('click', () => {
-  document.getElementById('cake').style.display = 'none';
-  document.getElementById('text-container').style.display = 'none';
-  document.getElementById('main-video').style.display = 'block';
-});
-</script>
+    function showVideoAndMessages() {
+      document.getElementById("cake").style.display = "none";
+      document.getElementById("mainVideo").style.display = "block";
+      startMessages();
+    }
 
+    const messages = ["Chúc mừng sinh nhật em 🎂", "Thêm tuổi mới, thêm iu thương 💕",
+      "Chúc em mãi cười tươi như hôm nay 😄", "Sinh nhật vui như mơ nhé 🌈",
+      "Anh gửi nghìn cái ôm đến em 🤗", "Tuổi mới xinh hơn, vui hơn nha 🌟",
+      "Mỗi năm em đều đáng yêu hơn 😘", "Chúc em thật nhiều bánh kem 🍰",
+      "Sinh nhật ngọt ngào như chính em 🍯", "Chúc em năm nay gặp nhiều phép màu ✨",
+      "Thêm tuổi mới, đẹp gấp đôi luôn nha 😍", "Tặng em cả bầu trời yêu thương ☁️",
+      "Sinh nhật có anh là đủ rồi hen 🥰", "Hạnh phúc là thấy em cười 💖",
+      "Gửi em nghìn nụ hôn ngày sinh nhật 😚", "Chúc em vui như bé con nhận quà 🎁",
+      "Mãi mãi là công chúa bé nhỏ 👑", "Tuổi mới chill chill, yêu đời nha 🎶",
+      "Thêm tuổi nhưng vẫn cute lắm 🧸", "Sinh nhật đầy ắp hoa và bánh 🎂🌷",
+      "Anh chúc em điều gì em ước cũng đến 🙏", "Thương em nhất quả đất 🌍",
+      "Sinh nhật này, chỉ mong em thật vui 💌", "Thêm tuổi mới, bớt lo âu nhen 😇",
+      "Chúc bé iu tuổi mới lấp lánh 🌟", "Ngày hôm nay là của em 💐",
+      "Cám ơn vì em đã đến 🎈", "Tuổi mới mở ra hành trình mới 🚀",
+      "Yêu em thêm một vòng trái đất 🌎", "Happy birthday my sunshine 🌞",
+      "Chúc em như bánh ngọt – ngọt ngào mãi 🍩", "Thêm tuổi thêm xinh 😆",
+      "Cười lên, hôm nay là ngày đặc biệt của em 😄", "Mong mọi giấc mơ em đều chạm được 💫",
+      "Một năm mới đầy yêu thương đang chờ 💕", "Anh tặng cả tim cho sinh nhật em ❤️",
+      "Tuổi mới nhớ yêu bản thân nhiều hơn nha 🧘", "Mừng ngày em đến với thế giới này 🌍",
+      "Chúc em sớm trở thành phú bà 😋", "Năm nay, em sẽ toả sáng hơn bao giờ hết 🌟",
+      "Em là món quà của vũ trụ, biết không? 🎁", "Chúc em ngủ ngon cả năm luôn 😴",
+      "Anh chúc em ăn mãi không béo 🍜😂",
+      "Cười nhiều, yêu nhiều, được thương nhiều nha 😘", "Chúc em dịu dàng như em vốn có 🕊️",
+      "Tuổi mới, chạm gần hơn với ước mơ 🛤️", "Thêm tuổi, vẫn là bé con của anh 🐣",
+      "Anh chỉ chúc một điều: em mãi hạnh phúc 🥺", "Sinh nhật ấm áp, bên anh và những điều em yêu 💞"];
+    const colors = ["#FF69B4", "#FFD700", "#00FA9A", "#00CED1"];
+
+    function startMessages() {
+      setInterval(() => {
+        const msg = document.createElement("div");
+        msg.className = "message";
+        msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+        msg.style.left = `${Math.random() * 80 + 10}vw`;
+        msg.style.top = `${Math.random() * 5}vh`;
+        msg.style.animationDuration = `${5 + Math.random() * 5}s, 2s`;
+        msg.style.fontSize = `${1 + Math.random()}em`;
+        msg.style.color = colors[Math.floor(Math.random() * colors.length)];
+        document.body.appendChild(msg);
+        setTimeout(() => msg.remove(), 10000);
+      }, 1000);
+    }
+
+    // Start heart
+    drawHeart(width / 2, height / 2, 10);
+    setTimeout(() => {
+      let points1 = getTextPixels(text1, -40);
+      let points2 = getTextPixels(text2, 40);
+      animateToShape(points1.concat(points2));
+      showCake();
+    }, 2000);
+
+    renderParticles();
+
+    document.getElementById("cake").addEventListener("click", showVideoAndMessages);
+  </script>
 </body>
 </html>
