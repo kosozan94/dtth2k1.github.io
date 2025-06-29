@@ -67,36 +67,46 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      z-index: 1;
-      max-width: 80vw;
-      max-height: 60vh;
-      border-radius: 12px;
-      box-shadow: 0 0 40px rgba(255,255,255,0.3);
-      pointer-events: none;
+      z-index: 2;
+      max-width: 300px;
+      max-height: 400px;
+      border-radius: 20px;
+      pointer-events: auto;
+      animation: pulseGlow 2s infinite;
+    }
+
+    @keyframes pulseGlow {
+      0% {
+        box-shadow: 0 0 10px rgba(255, 128, 255, 0.4);
+        transform: translate(-50%, -50%) scale(1);
+      }
+      50% {
+        box-shadow: 0 0 25px rgba(255, 128, 255, 0.7);
+        transform: translate(-50%, -50%) scale(1.03);
+      }
+      100% {
+        box-shadow: 0 0 10px rgba(255, 128, 255, 0.4);
+        transform: translate(-50%, -50%) scale(1);
+      }
     }
   </style>
 </head>
 <body>
-  <!-- 🔈 Nhạc nền nhẹ (ẩn) -->
-  <iframe style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay"></iframe>
 
-  <!-- 🎬 Video nằm giữa -->
-  <video autoplay loop muted playsinline class="center-video">
+  <!-- 🔈 Nhạc nền ẩn (YouTube iframe) -->
+  <iframe id="bg-music" style="display:none" src="https://www.youtube.com/embed/dPZTh2NKTm4?enablejsapi=1&autoplay=1&loop=1&playlist=dPZTh2NKTm4" allow="autoplay" frameborder="0"></iframe>
+
+  <!-- 💖 Video giữa trang -->
+  <video autoplay loop muted playsinline class="center-video" id="heart-video">
     <source src="video.mp4" type="video/mp4" />
     Trình duyệt của bạn không hỗ trợ phát video.
   </video>
 
   <script>
     const messages = [
-      "Anh yêu em nhiều 💖",
-      "Cảm ơn vì đã đến 💌",
-      "Ai lớp diu bặc bặc 😘",
-      "Luôn bên nhau 🫶",
-      "He he he he he 🤭",
-      "Tình iu sô nhìu 💞",
-      "Xa mà gần 🌌",
-      "Thương như hôm qua 🕊️",
-      "Mỗi dòng là nhớ 💭"
+      "Anh yêu em nhiều 💖", "Cảm ơn vì đã đến 💌", "Ai lớp diu bặc bặc 😘",
+      "Luôn bên nhau 🫶", "He he he he he 🤭", "Tình iu sô nhìu 💞",
+      "Xa mà gần 🌌", "Thương như hôm qua 🕊️", "Mỗi dòng là nhớ 💭"
     ];
 
     const emojis = ["❤️", "💖", "💌", "🥰", "😘", "💞", "💫", "🫶", "🌸"];
@@ -141,6 +151,28 @@
     createStars();
     setInterval(createFallingText, 300);
     setInterval(createFallingEmoji, 400);
+
+    // 🎵 Tắt/bật nhạc khi click video
+    let musicOn = true;
+    const iframe = document.getElementById("bg-music");
+    const heartVideo = document.getElementById("heart-video");
+
+    function postMessageToYouTube(command) {
+      iframe.contentWindow.postMessage(JSON.stringify({
+        event: "command",
+        func: command,
+        args: []
+      }), "*");
+    }
+
+    heartVideo.addEventListener("click", () => {
+      if (musicOn) {
+        postMessageToYouTube("pauseVideo");
+      } else {
+        postMessageToYouTube("playVideo");
+      }
+      musicOn = !musicOn;
+    });
   </script>
 </body>
 </html>
